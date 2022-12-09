@@ -1,0 +1,23 @@
+{
+  "name": "youtube-downloader",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "ts": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@santi100/coloring-lib": "^1.0.6",
+    "commander": "^9.4.1",
+    "figlet": "^1.5.2",
+    "inquirer": "8.0.1",
+    "nanospinner": "^1.1.0",
+    "ytdl-core": "^4.11.2"
+  },
+  "devDependencies": {
+    "@types/figlet": "^1.5.5",
+    "@types/inquirer": "^8.1.0",
+    "typescript": "^4.9.4"
+  }
+}

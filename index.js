@@ -51,12 +51,14 @@ async function main() {
         return 1; // Error.
     }
     else {
+        const stats = await ytdl_core_1.default.getInfo(url.toString());
+        // console.dir(stats);
+        const { videoDetails: { videoId } } = stats;
         if (verbose)
             console.log(`${VERBOSE_PROMPT} PHASE 2: Download.`);
-        const FILENAME = `./vid-${Date.now()}.mp4`;
+        const FILENAME = `./vid-${videoId}.mp4`;
         const resultStream = (0, ytdl_core_1.default)(url.toString(), {
-            // @ts-ignore
-            format: 'mp4'
+            quality: 18
         });
         const spinner = nanospinner_1.default.createSpinner('Writing video...').start();
         await (0, promises_1.writeFile)(FILENAME, resultStream); // Writing video...

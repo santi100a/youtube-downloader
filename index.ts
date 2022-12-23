@@ -54,12 +54,15 @@ async function main(): Promise<0 | 1> {
         console.error(createErrorPrompt(error as Error));
         return 1; // Error.
     } else {
-        if (verbose) console.log(`${VERBOSE_PROMPT} PHASE 2: Download.`);
-        const FILENAME = `./vid-${Date.now()}.mp4`;
+	const stats = await ytdl.getInfo(url.toString());
+	// console.dir(stats);
+        const { videoDetails: { videoId } } =
+		stats;
+	if (verbose) console.log(`${VERBOSE_PROMPT} PHASE 2: Download.`);
+        const FILENAME = `./vid-${videoId}.mp4`;
 
         const resultStream = ytdl(url.toString(), { 
-             // @ts-ignore
-             format: 'mp4'
+             quality: 18
         });
         const spinner = nanospinner.createSpinner('Writing video...').start();
         await writeFile(FILENAME, resultStream); // Writing video...

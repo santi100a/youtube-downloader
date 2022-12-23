@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ytdl_core_1 = __importDefault(require("ytdl-core"));
 const inquirer_1 = __importDefault(require("inquirer"));
 const figlet_1 = __importDefault(require("figlet"));
 const nanospinner_1 = __importDefault(require("nanospinner"));
 const index_cjs_1 = require("@santi100/coloring-lib/cjs/index.cjs");
+const cjs_1 = require("@santi100/yt-dlib/cjs");
 const commander_1 = require("commander");
-const promises_1 = require("node:fs/promises");
+const promises_1 = require("fs/promises");
+const path_1 = require("path");
 const CLI_NAME = 'YouTube Downloader';
 const CMD_NAME = 'youtube-downloader';
 const VERSION = 'v1.0.0';
@@ -41,9 +42,9 @@ async function main() {
         });
         return new URL(rawLink);
     }
-    const [url, error] = await getURL()
+    const [url, error] = (await getURL()
         .then(url => [url, null])
-        .catch(err => [null, err]);
+        .catch(err => [null, err]));
     if (error) {
         if (verbose)
             console.log(`${VERBOSE_PROMPT} Invalid URL.`);
@@ -53,19 +54,34 @@ async function main() {
     else {
         if (verbose)
             console.log(`${VERBOSE_PROMPT} PHASE 2: Download.`);
-        const FILENAME = `./vid-${Date.now()}.mp4`;
-        const resultStream = (0, ytdl_core_1.default)(url.toString(), {
-            // @ts-ignore
-            format: 'mp4'
-        });
-        const spinner = nanospinner_1.default.createSpinner('Writing video...').start();
-        await (0, promises_1.writeFile)(FILENAME, resultStream); // Writing video...
-        spinner.stop().clear();
+        const detailsSpinner = nanospinner_1.default.createSpinner('Fetching video ID...').start();
+        const videoId = url.searchParams.get('v') || 'Video';
+        detailsSpinner.stop().clear();
+        const FILENAME = (0, path_1.resolve)(__dirname, `vid-${videoId}.mp4`);
+        const fetchSpinner = nanospinner_1.default.createSpinner('Fetching video...').start();
+        fetchSpinner.stop().clear();
+        if (verbose)
+            console.log(`${VERBOSE_PROMPT} PHASE 3: Writing to Disk.`);
+        const videoSpinner = nanospinner_1.default.createSpinner('Writing video...').start();
+        await (0, promises_1.writeFile)(FILENAME, (0, cjs_1.downloadVideo)(url));
+        videoSpinner.stop().clear();
         console.log(createSuccessPrompt(`Successfully written ${FILENAME}`));
         return 0;
     }
 }
+async function readableToBuffer(readable) {
+    return new Promise(async (resolve, reject) => {
+        // readable.on('error', reject); readable.on('close', resolve);
+        const chunks = [];
+        for await (const chunk of readable)
+            chunks.push(chunk);
+        resolve(Buffer.concat(chunks));
+        // readable.on('error', reject);
+    });
+}
 main().then(process.exit).catch(e => {
     console.error(createErrorPrompt(e));
+    if (verbose)
+        throw e;
     process.exit(1);
 });

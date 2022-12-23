@@ -12,16 +12,21 @@
   },
   "dependencies": {
     "@santi100/coloring-lib": "^1.0.6",
+    "@santi100/yt-dlib": "^1.0.1",
+    "@types/youtube-dl": "^3.0.1",
     "commander": "^9.4.1",
     "figlet": "^1.5.2",
     "inquirer": "8.0.1",
     "nanospinner": "^1.1.0",
+    "node-ytdl-core-v2": "^2.0.0",
+    "ytdl": "^1.4.1",
     "ytdl-core": "^4.11.2"
   },
   "devDependencies": {
     "@types/figlet": "^1.5.5",
     "@types/inquirer": "^8.1.0",
     "caxa": "^3.0.1",
+    "mocha": "^10.2.0",
     "typescript": "^4.9.4"
   }
 }
